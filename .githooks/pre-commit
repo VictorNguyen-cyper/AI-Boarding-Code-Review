@@ -1,0 +1,22 @@
+#!/bin/sh
+# Hook trước khi commit (mục 4a của quet-tu-dong.md, bổ sung kiểm tra nhật ký).
+# Bật một lần bằng: git config core.hooksPath .githooks
+
+GOC="$(git rev-parse --show-toplevel)"
+
+gitleaks protect --staged --redact --verbose || {
+  echo "Phát hiện khả năng rò rỉ khoá bí mật. Commit bị chặn."
+  exit 1
+}
+
+if git diff --cached --name-only | grep -qx 'nhat-ky.csv'; then
+  # Kiểm tra đúng nội dung sắp commit, không phải bản đang mở trên máy.
+  TAM="$(mktemp)"
+  git show :nhat-ky.csv > "$TAM"
+  python3 "$GOC/scripts/kiem-tra-nhat-ky.py" "$TAM" || {
+    rm -f "$TAM"
+    echo "nhat-ky.csv chưa hợp lệ. Commit bị chặn."
+    exit 1
+  }
+  rm -f "$TAM"
+fi
