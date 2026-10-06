@@ -256,3 +256,14 @@ Lần cài đầu tiên, ghi lại ba thông tin sau để đưa vào báo cáo:
 - Thời gian chạy một lượt quét đầy đủ, tính bằng giây.
 
 Mục 5.2 của kế hoạch nói Tầng 1 là *"chi phí thấp nhất, phát hiện loại lỗi tốn kém nhất"*. Ba con số trên là bằng chứng cho mệnh đề đó — không có chúng thì mệnh đề chỉ là nhận định.
+
+### Số liệu lần cài đầu tiên (2026-10-06)
+
+| Mục | Giá trị |
+| --- | --- |
+| gitleaks | 8.30.1 |
+| semgrep | 1.179.0 |
+| trivy | 0.75.0 |
+| Thời gian cài bằng `brew install` | 1129 giây (khoảng 19 phút; chủ yếu là semgrep) |
+| Thời gian quét đầy đủ một lượt | 19 giây (repo chỉ có tài liệu, chưa có mã tính năng; lần đầu có tải bộ quy tắc semgrep) |
+| Hook chặn commit (mục 4a) | Đã cài |
