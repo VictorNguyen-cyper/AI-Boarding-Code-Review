@@ -27,7 +27,9 @@ check_log = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(check_log)
 normalize = check_log.normalize
 
-FEATURE_COLUMNS = ["Feature", "Shipped on", "Follow-up checked on"]
+# The last three are the boundary questions of plan section 8 (table 4).
+BOUNDARY_COLUMNS = ["Real user data", "Public internet", "Over 6 months"]
+FEATURE_COLUMNS = ["Feature", "Shipped on", "Follow-up checked on"] + BOUNDARY_COLUMNS
 FINDING_COLUMNS = [
     "Feature",
     "Tier",
@@ -39,7 +41,8 @@ FINDING_COLUMNS = [
     "Classified on",
     "Note",
 ]
-TIERS = {"1", "2", "3"}
+# "Later" = a bug that showed up after shipping (the "Bugs found later" column, itemized).
+TIERS = {"1", "2", "3", "Later"}
 VERDICTS = {"True positive", "False positive", "Unsure"}
 SEVERITIES = {"Critical", "High", "Medium", "Low"}
 CRITERION = re.compile(r"^C\d{2}$")
@@ -86,7 +89,7 @@ def validate_features(path, known):
         if len(row) != len(FEATURE_COLUMNS):
             errors.append(f"{path} line {line_no}: has {len(row)} cells, expected {len(FEATURE_COLUMNS)}.")
             continue
-        name, shipped, checked = row
+        name, shipped, checked = row[:3]
         if name not in known:
             errors.append(f"{path} line {line_no}: feature '{name}' has no row in log.csv.")
         if name in seen:
@@ -97,6 +100,9 @@ def validate_features(path, known):
                 errors.append(f"{path} line {line_no}: '{col}' must be a date YYYY-MM-DD, got '{value}'.")
         if checked and not shipped:
             errors.append(f"{path} line {line_no}: 'Follow-up checked on' is filled but 'Shipped on' is empty.")
+        for col, value in zip(BOUNDARY_COLUMNS, row[3:]):
+            if value and value not in ("Yes", "No"):
+                errors.append(f"{path} line {line_no}: '{col}' must be Yes or No, got '{value}'.")
         s, c = parse_date(shipped), parse_date(checked)
         if s and c and c < s + timedelta(days=FOLLOW_UP_DAYS):
             errors.append(
@@ -125,7 +131,7 @@ def validate_findings(path, known):
         if c["Feature"] not in known:
             errors.append(f"{where}: feature '{c['Feature']}' has no row in log.csv.")
         if c["Tier"] not in TIERS:
-            errors.append(f"{where}: 'Tier' must be 1, 2 or 3, got '{c['Tier']}'.")
+            errors.append(f"{where}: 'Tier' must be 1, 2, 3 or Later, got '{c['Tier']}'.")
         if not c["Source"]:
             errors.append(f"{where}: 'Source' is empty (tool name, test case ID or reviewing model).")
         if c["Criterion"] and not CRITERION.match(c["Criterion"]):
@@ -185,7 +191,7 @@ def status(args, today):
             row[c] and row[c] != "(no findings)" for c in ("Automated scan findings", "AI review findings")
         )
 
-        shipped_on, checked_on = (shipping.get(name) or [name, "", ""])[1:]
+        shipped_on, checked_on = (shipping.get(name) or [name, "", ""])[1:3]
         shipped = parse_date(shipped_on)
         if row["Bugs found later"] or checked_on:
             follow = "done"
@@ -209,6 +215,8 @@ def status(args, today):
             step = "Itemize findings into findings.csv"
         elif classified < len(mine):
             step = f"Classify {len(mine) - classified} finding(s) in findings.csv"
+        elif not all((shipping.get(name) or [""] * 6)[3:6]):
+            step = "Answer the 3 boundary questions in features.csv"
         elif not shipped:
             step = "Fill 'Shipped on' in features.csv when it goes live"
         elif follow.startswith("DUE"):

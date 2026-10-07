@@ -4,6 +4,7 @@
 #   ./qa check                          validate log.csv, features.csv and findings.csv
 #   ./qa scan "<feature>" [code dir]    Tier 1 (scripts/scan.sh)
 #   ./qa review [--lang en|zh-Hant|vi] "<feature>" <requirements> <code dir>   Tier 3 (review.sh)
+#   ./qa report                         build results.md, the four result tables (task T6)
 set -eu
 ROOT=$(cd "$(dirname "$0")" && pwd)
 CMD=${1:-status}
@@ -15,8 +16,9 @@ case "$CMD" in
     python3 "$ROOT/scripts/check-log.py" "$ROOT/log.csv" || rc=1
     python3 "$ROOT/scripts/qa.py" check "$@" || rc=1
     exit $rc ;;
+  report) exec python3 "$ROOT/scripts/report.py" "$@" ;;
   scan) exec "$ROOT/scripts/scan.sh" "$@" ;;
   review) exec "$ROOT/review.sh" "$@" ;;
-  -h|--help|help) sed -n '2,6p' "$0" | sed 's/^# \{0,1\}//' ;;
+  -h|--help|help) sed -n '2,7p' "$0" | sed 's/^# \{0,1\}//' ;;
   *) echo "Unknown command: $CMD (try ./qa help)" >&2; exit 2 ;;
 esac
