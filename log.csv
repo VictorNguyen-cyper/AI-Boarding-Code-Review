@@ -1,2 +1,2 @@
 Feature,Requirement,Prompt rounds,Time,Manual check,Automated scan findings,AI review findings,Bugs found later
-Internship sign-up,An intern enters their name and email and chooses an internship term to register; a manager views the list of registrations.,,,,,,
+Internship sign-up,An intern enters their name and email and chooses an internship term to register; a manager views the list of registrations.,,,Pass,semgrep: generic.html-templates.security.var-in-href.var-in-href at templates/expired.html:6 severity WARNING,,
