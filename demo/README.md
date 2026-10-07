@@ -5,7 +5,7 @@
 ## Hạn chế của bản demo
 
 - Lỗi được **cố ý cài** vào ứng dụng giả lập, nên tỷ lệ phát hiện của Tầng 3 bị thổi phồng.
-- Mã nguồn và rà soát do **cùng một mô hình** thực hiện, trái mục 5.3 của kế hoạch.
+- Mã nguồn và rà soát do **cùng một mô hình** thực hiện, trái mục 5.3 của kế hoạch. Tầng 3 của demo được làm tay theo định dạng phát hiện của `checklist.md`, **không** qua `ra-soat.sh` và Gemini như quy trình thật (xem `ra-soat-ai.md`).
 - Cột *Kiểm tra bằng mắt* trong `nhat-ky-DEMO.csv` là **giả định**, không do người thao tác điền.
 - Hai khoá trong `app/app.py` (dòng 9 và 10) là **khoá giả**. Phát hiện của gitleaks ở dòng 10 được khai báo trong `.gitleaksignore` ở thư mục gốc để hook không chặn commit; nếu sửa `app.py` làm dịch dòng thì phải cập nhật lại tệp này.
 
@@ -16,7 +16,7 @@
 | `app/` | — | Ứng dụng Flask giả lập tính năng "Xem đơn hàng" |
 | `nhat-ky-DEMO.csv` | — | Một dòng nhật ký theo đúng 8 cột |
 | `test-case-xem-don-hang-DEMO.md` | 2 | 14 tình huống theo 6 nhóm, kèm kết quả chạy thật |
-| `ra-soat-xem-don-hang-DEMO.md` | 3 | Rà soát theo 12 tiêu chí, theo mẫu T5 |
+| `ra-soat-xem-don-hang-DEMO.md` | 3 | Rà soát theo 12 tiêu chí, định dạng của `checklist.md` (không qua Gemini) |
 | `bang-doi-chieu-DEMO.md` | — | Vấn đề nào bị tầng nào bắt được |
 | `demo.html` | — | Trang tổng hợp, mở trực tiếp bằng trình duyệt |
 | `chay_tang2.py`, `tao_trang.py`, `tang2.json` | — | Script chạy Tầng 2, script dựng trang, kết quả thô |
