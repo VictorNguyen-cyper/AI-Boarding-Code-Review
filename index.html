@@ -21,19 +21,19 @@ td ul{margin:0;padding-left:18px}code{font-size:12.5px}.miss{color:var(--muted);
 <div class="kpis"><div class="kpi"><b>0</b><span>Features logged</span></div><div class="kpi"><b>—</b><span>Passed the manual check</span></div><div class="kpi"><b>—</b><span>Passed manually, Tier 1 still found issues</span></div><div class="kpi"><b>—</b><span>Passed manually, Tier 3 still found issues</span></div><div class="kpi"><b>—</b><span>Passed manually, broke within a week</span></div></div>
 
 <h2>1. Comparison — passed the manual check, yet issues were found</h2>
-<div class="pending"><b>Missing data.</b> No feature has passed the manual check yet. Needs: rows in log.csv with Manual check = Pass. Filled in during consolidation (task T6, <code>results.md</code>).</div>
+<div class="pending"><b>Missing data.</b> No feature has passed the manual check yet. Needs: rows in log.csv with Manual check = Pass. See <code>classification.md</code>.</div>
 
 <h2>2. Classification — what tools catch vs. what only people catch</h2>
-<div class="pending"><b>Missing data.</b> log.csv records findings but not their category or who could have caught them. Needs: a human classification of each finding. Filled in during consolidation (task T6, <code>results.md</code>).</div>
+<div class="pending"><b>Missing data.</b> No problem in findings.csv has the verdict Real yet. Needs: rows in findings.csv with a verdict. See <code>classification.md</code>.</div>
 
 <h2>3. Reliability of the AI review (Tier 3)</h2>
-<div class="pending"><b>Missing data.</b> log.csv records Tier 3 findings but not whether each one is a true or false positive. Needs: a human true/false judgement for each Tier 3 finding. Filled in during consolidation (task T6, <code>results.md</code>).</div>
+<div class="pending"><b>Missing data.</b> findings.csv has no rows yet. Needs: a human verdict (Real / False positive) for each Tier 3 finding. See <code>classification.md</code>.</div>
 
 <h2>4. Where the full process applies</h2>
-<div class="pending"><b>Missing data.</b> log.csv does not record the three boundary questions. Needs: per-feature answers to: touches real user data? public on the internet? kept in use for more than six months?. Filled in during consolidation (task T6, <code>results.md</code>).</div>
+<div class="pending"><b>Missing data.</b> boundary.csv has no rows yet. Needs: per-feature answers to: touches real user data? public on the internet? kept in use for more than six months?. See <code>classification.md</code>.</div>
 
 <h2>Development log</h2>
-<div class="pending"><b>Missing data.</b> log.csv is empty. Needs: one row per finished feature. Filled in during consolidation (task T6, <code>results.md</code>).</div>
+<div class="pending"><b>Missing data.</b> log.csv is empty. Needs: one row per finished feature. See <code>classification.md</code>.</div>
 
 <p class="sub" style="margin-top:28px">Rebuild with <code>python3 scripts/build-page.py</code>. This page makes no network requests.</p>
 </main></body></html>

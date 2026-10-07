@@ -75,6 +75,7 @@
 ### 4.4 How findings were classified
 
 - Who classified each finding (true/false positive, category, which tier could catch it), when, and with what rule. *(fill in — this must be a human, rule A.1)*
+- The classification is recorded in `findings.csv` and `boundary.csv`; describe the rules in `classification.md` briefly, and any case where the verdict was hard to decide.
 
 ## 5. Timeline as executed (≈ ½ page)
 
@@ -85,7 +86,7 @@
 
 ## 6. Results (≈ 3–4 pages)
 
-*Sources: `results.md` (task T6), `log.csv`. Page `index.html` (task T7) shows the figures that come straight from the log.*
+*Sources: `results.md` (task T6), `log.csv`, `findings.csv`, `boundary.csv`. Page `index.html` (task T7) shows the tables built directly from these files.*
 
 Open with one sentence on the sample: how many features, over how many weeks. *(fill in)*
 
