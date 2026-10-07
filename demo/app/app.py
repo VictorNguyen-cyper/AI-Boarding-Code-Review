@@ -1,5 +1,5 @@
-# DEMO — ứng dụng giả lập kiểu mã "AI sinh ra, chạy được, nhìn thì đạt".
-# Chỉ dùng để chạy thử quy trình 3 tầng. Không phải dữ liệu nghiên cứu.
+# DEMO — simulated app in the style of "AI-generated, runs, looks fine at a glance".
+# Only for trying out the 3-tier process. Not research data.
 import sqlite3
 import urllib.request
 
@@ -7,10 +7,10 @@ from flask import Flask, g, jsonify, request
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "f3a9c1e7b2d84f6a9e0c5b7d1a3f8e2c"
-SHIPPING_API_KEY = "Zq8vN3tR6yW1pL4sK9xC2bM7hF5jD0gA"  # khoá GIẢ cho demo
-SHIPPING_URL = "http://127.0.0.1:9/track"  # dịch vụ vận chuyển bên ngoài
+SHIPPING_API_KEY = "Zq8vN3tR6yW1pL4sK9xC2bM7hF5jD0gA"  # FAKE key for the demo
+SHIPPING_URL = "http://127.0.0.1:9/track"  # external shipping service
 
-TOKENS = {"token-an": 1, "token-binh": 2, "token-moi": 3}
+TOKENS = {"token-alice": 1, "token-bob": 2, "token-new": 3}
 
 
 def db():
@@ -26,9 +26,9 @@ def init_db(conn):
         CREATE TABLE orders(id INTEGER PRIMARY KEY, user_id INT, status TEXT,
                             deleted INT DEFAULT 0, note TEXT);
         CREATE TABLE items(id INTEGER PRIMARY KEY, order_id INT, name TEXT, qty INT);
-        INSERT INTO orders VALUES (1,1,'done',0,'Đơn của An'),(2,1,'pending',0,''),
-                                  (3,1,'pending',1,'đã xoá'),(4,2,'done',0,'Đơn của Bình');
-        INSERT INTO items VALUES (1,1,'Bút',2),(2,2,'Vở',5),(3,4,'Thước',1);
+        INSERT INTO orders VALUES (1,1,'done',0,'Alice''s order'),(2,1,'pending',0,''),
+                                  (3,1,'pending',1,'deleted'),(4,2,'done',0,'Bob''s order');
+        INSERT INTO items VALUES (1,1,'Pen',2),(2,2,'Notebook',5),(3,4,'Ruler',1);
         """
     )
 
@@ -55,7 +55,7 @@ def get_order(order_id):
     current_user()
     o = db().execute("SELECT * FROM orders WHERE id=?", (order_id,)).fetchone()
     if o is None:
-        return jsonify({"error": "Không tìm thấy"}), 404
+        return jsonify({"error": "Not found"}), 404
     return jsonify(dict(o))
 
 

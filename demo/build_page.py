@@ -1,4 +1,4 @@
-# DEMO — dựng demo.html từ bang-doi-chieu-DEMO.md và tang2.json.
+# DEMO — build demo.html from comparison-DEMO.md and tier2.json.
 import html
 import json
 import re
@@ -20,28 +20,28 @@ def md_table(text):
 
     t = "<table><thead><tr>" + "".join(f"<th>{html.escape(h)}</th>" for h in head) + "</tr></thead><tbody>"
     for r in body:
-        cls = ' class="total"' if "Tổng" in r[1] else ""
+        cls = ' class="total"' if "Total" in r[1] else ""
         t += f"<tr{cls}>" + "".join(f"<td>{cell(c)}</td>" for c in r) + "</tr>"
     return t + "</tbody></table>"
 
 
-def bo_escape(s):
+def unescape(s):
     s = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), s)
-    return re.sub(r"<!doctype.*", "trang lỗi HTML Internal Server Error", s)
+    return re.sub(r"<!doctype.*", "HTML error page Internal Server Error", s)
 
 
-doi_chieu = md_table((d / "bang-doi-chieu-DEMO.md").read_text(encoding="utf-8"))
-t2 = json.load(open(d / "tang2.json", encoding="utf-8"))
-t2_html = "<table><thead><tr><th>Mã</th><th>Nhóm</th><th>Bước thao tác</th><th>Mong đợi</th><th>Thực tế</th><th>Kết quả</th></tr></thead><tbody>"
+comparison = md_table((d / "comparison-DEMO.md").read_text(encoding="utf-8"))
+t2 = json.load(open(d / "tier2.json", encoding="utf-8"))
+t2_html = "<table><thead><tr><th>ID</th><th>Group</th><th>Steps</th><th>Expected</th><th>Actual</th><th>Result</th></tr></thead><tbody>"
 for c in t2:
-    badge = '<span class="badge pass">Đạt</span>' if c["dat"] else '<span class="badge fail">Không đạt</span>'
-    t2_html += (f"<tr><td>{c['ma']}</td><td>{c['nhom']}</td><td>{html.escape(c['buoc'])}</td>"
-                f"<td>{html.escape(c['mong_doi'])}</td><td><code>{html.escape(bo_escape(c['thuc_te']))}</code></td><td>{badge}</td></tr>")
+    badge = '<span class="badge pass">Pass</span>' if c["passed"] else '<span class="badge fail">Fail</span>'
+    t2_html += (f"<tr><td>{c['id']}</td><td>{c['group']}</td><td>{html.escape(c['steps'])}</td>"
+                f"<td>{html.escape(c['expected'])}</td><td><code>{html.escape(unescape(c['actual']))}</code></td><td>{badge}</td></tr>")
 t2_html += "</tbody></table>"
-dat = sum(c["dat"] for c in t2)
+passed = sum(c["passed"] for c in t2)
 
-page = f"""<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Demo nghiệm thu 3 tầng</title><style>
+page = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3-tier acceptance demo</title><style>
 :root{{--bg:#f7f7f5;--fg:#1d1d1b;--muted:#6b6b66;--card:#fff;--line:#e3e2dc;--ok:#1f7a4d;--bad:#b3261e;--warn:#8a5a00;--warnbg:#fff4d6}}
 @media (prefers-color-scheme:dark){{:root{{--bg:#161615;--fg:#ecebe6;--muted:#a3a29b;--card:#1f1f1d;--line:#34332f;--ok:#5cc28c;--bad:#f0817a;--warn:#f2c46b;--warnbg:#2e2615}}}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,system-ui,sans-serif}}
@@ -56,13 +56,13 @@ tr.total td{{font-weight:600;border-top:2px solid var(--line)}}.ok{{color:var(--
 code{{font-size:12.5px;word-break:break-word}}.badge{{font-size:12px;padding:2px 8px;border-radius:99px;white-space:nowrap;font-weight:600}}
 .pass{{color:var(--ok);border:1px solid var(--ok)}}.fail{{color:var(--bad);border:1px solid var(--bad)}}
 </style></head><body><main>
-<h1>Demo quy trình nghiệm thu 3 tầng</h1><p class="sub">Tính năng: <strong>Xem đơn hàng</strong> · chạy ngày 2026-10-06</p>
-<p class="note"><strong>DEMO — không phải dữ liệu nghiên cứu.</strong> Lỗi được cố ý cài vào ứng dụng giả lập; mã nguồn và rà soát do cùng một mô hình thực hiện (trái mục 5.3); cột "Kiểm tra bằng mắt" là giả định. Không dùng các con số này trong báo cáo.</p>
-<div class="kpis"><div class="kpi"><b>0/11</b><span>Kiểm tra bằng mắt</span></div><div class="kpi"><b>2/11</b><span>Tầng 1 — quét tự động</span></div>
-<div class="kpi"><b>9/11</b><span>Tầng 2 — kiểm thử hành vi</span></div><div class="kpi"><b>11/11</b><span>Tầng 3 — rà soát (bị thổi phồng)</span></div></div>
-<h2>Bảng đối chiếu</h2><div class="wrap">{doi_chieu}</div>
-<h2>Tầng 2 — {len(t2)} tình huống, đạt {dat}, không đạt {len(t2) - dat}</h2><div class="wrap">{t2_html}</div>
-<p class="sub" style="margin-top:20px">Chi tiết rà soát Tầng 3: ra-soat-xem-don-hang-DEMO.md · Báo cáo quét: ket-qua-quet/</p>
+<h1>3-tier acceptance process demo</h1><p class="sub">Feature: <strong>View orders</strong> · run on 2026-10-06</p>
+<p class="note"><strong>DEMO — not research data.</strong> Bugs were deliberately planted in the simulated app; the code and the review were produced by the same model (contrary to section 5.3); the "Manual check" column is assumed. Do not use these figures in any report.</p>
+<div class="kpis"><div class="kpi"><b>0/11</b><span>Manual check</span></div><div class="kpi"><b>2/11</b><span>Tier 1 — automated scan</span></div>
+<div class="kpi"><b>9/11</b><span>Tier 2 — behavior testing</span></div><div class="kpi"><b>11/11</b><span>Tier 3 — review (inflated)</span></div></div>
+<h2>Comparison table</h2><div class="wrap">{comparison}</div>
+<h2>Tier 2 — {len(t2)} cases, {passed} passed, {len(t2) - passed} failed</h2><div class="wrap">{t2_html}</div>
+<p class="sub" style="margin-top:20px">Tier 3 review details: review-view-orders-DEMO.md · Scan reports: scan-results/</p>
 </main></body></html>"""
 (d / "demo.html").write_text(page, encoding="utf-8")
 print(d / "demo.html")
