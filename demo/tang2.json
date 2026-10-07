@@ -1,0 +1,114 @@
+[
+ {
+  "ma": "TC-01",
+  "nhom": "Luồng chính",
+  "buoc": "An xem danh sách đơn",
+  "mong_doi": "200, 2 đơn chưa xoá của An",
+  "thuc_te": "200, 2 đơn",
+  "dat": true
+ },
+ {
+  "ma": "TC-02",
+  "nhom": "Luồng chính",
+  "buoc": "An xem chi tiết đơn 1",
+  "mong_doi": "200, đơn 1",
+  "thuc_te": "200 {\"deleted\":0,\"id\":1,\"note\":\"\\u0110\\u01a1n c\\u1ee7a An\",\"status\":\"done\"",
+  "dat": true
+ },
+ {
+  "ma": "TC-03",
+  "nhom": "Luồng chính",
+  "buoc": "An tạo đơn mới",
+  "mong_doi": "201, có id",
+  "thuc_te": "201 {\"id\":5}",
+  "dat": true
+ },
+ {
+  "ma": "TC-04",
+  "nhom": "Luồng chính",
+  "buoc": "An xem tỷ lệ hoàn thành",
+  "mong_doi": "total=2, rate=50.0 (không tính đơn đã xoá)",
+  "thuc_te": "200 total=3 rate=33.3",
+  "dat": false
+ },
+ {
+  "ma": "TC-11",
+  "nhom": "Dữ liệu rỗng",
+  "buoc": "Tài khoản mới xem danh sách",
+  "mong_doi": "200, danh sách rỗng",
+  "thuc_te": "200 []",
+  "dat": true
+ },
+ {
+  "ma": "TC-12",
+  "nhom": "Dữ liệu rỗng",
+  "buoc": "Tài khoản mới xem thống kê",
+  "mong_doi": "200, rate=0 hoặc thông báo chưa có dữ liệu",
+  "thuc_te": "500 <!doctype html> <html lang=en> <title>500 Internal Server Error</title",
+  "dat": false
+ },
+ {
+  "ma": "TC-21",
+  "nhom": "Dữ liệu sai",
+  "buoc": "An mở đơn 4 (của Bình) bằng cách sửa ID",
+  "mong_doi": "403 hoặc 404",
+  "thuc_te": "200 {\"deleted\":0,\"id\":4,\"note\":\"\\u0110\\u01a1n c\\u1ee7a B\\u00ecnh\",\"status\"",
+  "dat": false
+ },
+ {
+  "ma": "TC-22",
+  "nhom": "Dữ liệu sai",
+  "buoc": "Tạo đơn thiếu trường note",
+  "mong_doi": "400, báo thiếu trường",
+  "thuc_te": "500 <!doctype html> <html lang=en> <title>500 Internal Server Error</title",
+  "dat": false
+ },
+ {
+  "ma": "TC-23",
+  "nhom": "Dữ liệu sai",
+  "buoc": "Tạo đơn với note dài 100 000 ký tự",
+  "mong_doi": "400, báo quá dài",
+  "thuc_te": "201 {\"id\":5}",
+  "dat": false
+ },
+ {
+  "ma": "TC-31",
+  "nhom": "Mạng chậm",
+  "buoc": "Dịch vụ vận chuyển không kết nối được",
+  "mong_doi": "502/503, thông báo chung, không lộ địa chỉ nội bộ",
+  "thuc_te": "500 {\"error\":\"<urlopen error [Errno 61] Connection refused>\",\"url\":\"http:/ (lộ URL nội bộ)",
+  "dat": false
+ },
+ {
+  "ma": "TC-32",
+  "nhom": "Mạng chậm",
+  "buoc": "Dịch vụ vận chuyển treo không trả lời",
+  "mong_doi": "Trả lỗi trong vài giây",
+  "thuc_te": "vẫn chờ sau 8 giây, không có giới hạn thời gian chờ",
+  "dat": false
+ },
+ {
+  "ma": "TC-41",
+  "nhom": "Thao tác trùng",
+  "buoc": "Bấm Gửi hai lần với cùng nội dung",
+  "mong_doi": "Chỉ 1 đơn được tạo",
+  "thuc_te": "tạo ra 2 đơn",
+  "dat": false
+ },
+ {
+  "ma": "TC-51",
+  "nhom": "Phiên hết hạn",
+  "buoc": "Gọi /orders không có token",
+  "mong_doi": "401, thông báo cần đăng nhập",
+  "thuc_te": "500 <!doctype html> <html lang=en> <title>500 Internal Server Error</title",
+  "dat": false
+ },
+ {
+  "ma": "TC-52",
+  "nhom": "Phiên hết hạn",
+  "buoc": "Gọi /orders với token đã hết hạn",
+  "mong_doi": "401, thông báo phiên hết hạn",
+  "thuc_te": "500 <!doctype html> <html lang=en> <title>500 Internal Server Error</title",
+  "dat": false
+ }
+]
