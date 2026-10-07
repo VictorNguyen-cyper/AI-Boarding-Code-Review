@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Acceptance study results</title><style>
+:root{--bg:#f7f7f5;--fg:#1d1d1b;--muted:#6b6b66;--card:#fff;--line:#e3e2dc;--ok:#1f7a4d;--bad:#b3261e;--warn:#8a5a00;--warnbg:#fff4d6}
+@media (prefers-color-scheme:dark){:root{--bg:#161615;--fg:#ecebe6;--muted:#a3a29b;--card:#1f1f1d;--line:#34332f;--ok:#5cc28c;--bad:#f0817a;--warn:#f2c46b;--warnbg:#2e2615}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 -apple-system,system-ui,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:32px 16px 64px}h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:36px 0 10px}
+.sub{color:var(--muted);margin:0 0 20px}.note{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:12px 14px;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}.kpi b{display:block;font-size:28px}.kpi span{color:var(--muted);font-size:13px}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.03em}tr:last-child td{border-bottom:0}
+td ul{margin:0;padding-left:18px}code{font-size:12.5px}.miss{color:var(--muted);font-style:italic}
+.pending{background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:14px;color:var(--muted);font-size:14px}
+.badge{font-size:12px;padding:2px 8px;border-radius:99px;white-space:nowrap;font-weight:600}
+.pass{color:var(--ok);border:1px solid var(--ok)}.fail{color:var(--bad);border:1px solid var(--bad)}
+</style></head><body><main>
+<h1>Acceptance of AI-generated software — results</h1>
+<p class="sub">Built from <code>log.csv</code> on 2026-10-07 · 0 feature(s) · case study with figures, not inferential statistics</p>
+<p class="note"><strong>No data yet.</strong> log.csv has no feature rows. Add rows as each feature is finished (section 5.1), then rebuild this page.</p>
+<div class="kpis"><div class="kpi"><b>0</b><span>Features logged</span></div><div class="kpi"><b>—</b><span>Passed the manual check</span></div><div class="kpi"><b>—</b><span>Passed manually, Tier 1 still found issues</span></div><div class="kpi"><b>—</b><span>Passed manually, Tier 3 still found issues</span></div><div class="kpi"><b>—</b><span>Passed manually, broke within a week</span></div></div>
+
+<h2>1. Comparison — passed the manual check, yet issues were found</h2>
+<div class="pending"><b>Missing data.</b> No feature has passed the manual check yet. Needs: rows in log.csv with Manual check = Pass. See <code>classification.md</code>.</div>
+
+<h2>2. Classification — what tools catch vs. what only people catch</h2>
+<div class="pending"><b>Missing data.</b> No problem in findings.csv has the verdict Real yet. Needs: rows in findings.csv with a verdict. See <code>classification.md</code>.</div>
+
+<h2>3. Reliability of the AI review (Tier 3)</h2>
+<div class="pending"><b>Missing data.</b> findings.csv has no rows yet. Needs: a human verdict (Real / False positive) for each Tier 3 finding. See <code>classification.md</code>.</div>
+
+<h2>4. Where the full process applies</h2>
+<div class="pending"><b>Missing data.</b> boundary.csv has no rows yet. Needs: per-feature answers to: touches real user data? public on the internet? kept in use for more than six months?. See <code>classification.md</code>.</div>
+
+<h2>Development log</h2>
+<div class="pending"><b>Missing data.</b> log.csv is empty. Needs: one row per finished feature. See <code>classification.md</code>.</div>
+
+<p class="sub" style="margin-top:28px">Rebuild with <code>python3 scripts/build-page.py</code>. This page makes no network requests.</p>
+</main></body></html>

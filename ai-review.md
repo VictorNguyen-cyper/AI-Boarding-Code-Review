@@ -101,7 +101,7 @@ If `review-<name>.md` already exists, the script stops without overwriting it. T
 ## 6. Reading results and updating the log
 
 1. Record each finding in the *AI review findings* column of `log.csv` as `<criterion code> at <location>, severity <High/Medium/Low>`.
-2. **Do not classify true/false at this step.** Classification happens during consolidation (task T6), to compute the true-positive and false-positive rates (reliability table, section 8).
+2. **Do not classify true/false at this step.** Classification is done by a human in `findings.csv` (see `classification.md`) and used during consolidation (task T6), to compute the true-positive and false-positive rates (reliability table, section 8).
 3. Findings that match `semgrep` results are recorded in both columns (see `automated-scanning.md` section 3).
 4. The *Plain-language summary* section explains the findings without jargon and suggests ways to address them, with pros and cons. Use it to discuss the feature with your mentor or non-technical readers. It is a suggestion, not a verdict: do not record it in `log.csv`, and do not let it decide true/false classification.
 5. Read the *Open questions* section carefully. If most criteria are "Insufficient information", server-side code may have been left out.
