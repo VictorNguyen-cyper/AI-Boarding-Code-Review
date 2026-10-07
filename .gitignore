@@ -2,3 +2,5 @@
 scan-results/
 # Tier 3 review input files contain raw source code — do not commit.
 review-input/
+__pycache__/
+.venv/
