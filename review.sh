@@ -98,7 +98,12 @@ For a reader who is not a programmer. Use short sentences and everyday words; if
 
 - What this code does: <2-3 sentences>
 - Main concerns: <the most important findings, each in one plain sentence saying what could go wrong for users or the business, citing its criterion code>
-- Suggested direction: for the main concerns, describe 2-3 possible ways to address them (in words, no code). For each way, list its advantages and disadvantages. Then say which way you suggest and why, in 2-3 sentences.
+- Suggested direction: pick the 1-3 most serious concerns (highest severity first). For each one, write a small heading naming the concern, then a table with 2-3 possible ways to address it (in words, no code):
+
+  | Way | Advantages | Disadvantages |
+  | --- | --- | --- |
+
+  After each table, say which way you suggest and why, in 2-3 sentences. Always use this table; never list the ways as bullets.
 
 If there are no findings, write \"No concerns found\" under Main concerns and skip Suggested direction."
 
