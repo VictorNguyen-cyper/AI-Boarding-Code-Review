@@ -232,7 +232,8 @@ Note: this configuration sends source code to GitHub's runners. **Only use it on
 2. **Fill in the *Manual check* column of `log.csv` (`Pass` / `Fail`) — do this before step 3.** Filling it in after seeing scan results makes the whole control column worthless (section 5.1 of the project plan).
 3. Run `gitleaks` → `trivy` → `semgrep` (or `scripts/scan.sh`).
 4. Record every finding in the *Automated scan findings* column, including ones later judged to be false positives, marked as such.
-5. Do not decide at this step whether a finding is true or false (rule A.1). Classification happens during consolidation in task T6.
+5. Add one row per finding to `findings.csv` with `Tier` = `1` and `Source` = the tool name, leaving *Verdict* empty.
+6. Do not decide at this step whether a finding is true or false (rule A.1). A human fills *Verdict* later, during consolidation (task T6).
 
 ---
 

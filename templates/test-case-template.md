@@ -76,3 +76,4 @@ Log out in another tab and then act, delete the session cookie, use an expired t
 
 - Cases: <total> — passed: <n> — failed: <n>
 - Failed cases that were **not** revealed by the first manual check: <list IDs>
+- Add one row per failed case to `findings.csv` with `Tier` = `2` and `Source` = the case ID (e.g. `TC-21`).

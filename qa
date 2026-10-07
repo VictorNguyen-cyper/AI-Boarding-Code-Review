@@ -1,0 +1,22 @@
+#!/bin/sh
+# One entry point for the whole process — see README.md.
+#   ./qa status                         what is done for each feature, and what to do next
+#   ./qa check                          validate log.csv, features.csv and findings.csv
+#   ./qa scan "<feature>" [code dir]    Tier 1 (scripts/scan.sh)
+#   ./qa review [--lang en|zh-Hant|vi] "<feature>" <requirements> <code dir>   Tier 3 (review.sh)
+set -eu
+ROOT=$(cd "$(dirname "$0")" && pwd)
+CMD=${1:-status}
+[ $# -gt 0 ] && shift
+case "$CMD" in
+  status) exec python3 "$ROOT/scripts/qa.py" status "$@" ;;
+  check)
+    rc=0
+    python3 "$ROOT/scripts/check-log.py" "$ROOT/log.csv" || rc=1
+    python3 "$ROOT/scripts/qa.py" check "$@" || rc=1
+    exit $rc ;;
+  scan) exec "$ROOT/scripts/scan.sh" "$@" ;;
+  review) exec "$ROOT/review.sh" "$@" ;;
+  -h|--help|help) sed -n '2,6p' "$0" | sed 's/^# \{0,1\}//' ;;
+  *) echo "Unknown command: $CMD (try ./qa help)" >&2; exit 2 ;;
+esac
