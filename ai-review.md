@@ -34,9 +34,9 @@ In the model picker on gemini.google.com, **choose the Pro model**, since Tier 3
 
 | Item | Value |
 | --- | --- |
-| Reviewing model | *(fill in the exact name shown in Gemini)* |
-| Date chosen | *(fill in)* |
-| Mentor approved sending code externally | *(fill in date)* |
+| Reviewing model | 3.1 Pro, with "Extended thinking" on |
+| Date chosen | 2026-10-07 |
+| Mentor approved sending code externally | 2026-10-07 |
 
 ---
 
