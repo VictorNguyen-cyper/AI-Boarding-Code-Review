@@ -90,7 +90,17 @@ If there are no findings, write \"No findings\".
 
 ## Open questions
 
-List any information still needed for a complete review. If none, write \"None\"."
+List any information still needed for a complete review. If none, write \"None\".
+
+## Plain-language summary
+
+For a reader who is not a programmer. Use short sentences and everyday words; if a technical term is unavoidable, explain it in a few words. Base this section only on the findings above — add no new findings and give no verdict on whether the feature passes.
+
+- What this code does: <2-3 sentences>
+- Main concerns: <the most important findings, each in one plain sentence saying what could go wrong for users or the business, citing its criterion code>
+- Suggested direction: for the main concerns, describe 2-3 possible ways to address them (in words, no code). For each way, list its advantages and disadvantages. Then say which way you suggest and why, in 2-3 sentences.
+
+If there are no findings, write \"No concerns found\" under Main concerns and skip Suggested direction."
 
 {
   echo "===== INSTRUCTIONS ====="
