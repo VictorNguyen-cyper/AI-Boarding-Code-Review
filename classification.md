@@ -1,11 +1,12 @@
 # Classifying findings (input for task T6)
 
-`log.csv` records **what each tier reported**. It does not record whether a finding was real, which criterion it belongs to, or which tiers caught the same problem. Three of the four result tables (section 8 of the project plan) need exactly that, so it is recorded by a **human** in two separate files:
+`log.csv` records **what each tier reported**. It does not record whether a finding was real, which criterion it belongs to, or which tiers caught the same problem. Three of the four result tables (section 8 of the project plan) need exactly that, so it is recorded by a **human** in two separate files. A third file, `effort.csv`, records what each step cost:
 
 | File | One row per | Feeds |
 | --- | --- | --- |
 | `findings.csv` | distinct problem in a feature | Classification table, Reliability table |
 | `boundary.csv` | feature | Boundary table |
+| `effort.csv` | feature and step | The short checklist (objective 4): what each tier costs against what it catches |
 
 `log.csv` keeps its 8 columns unchanged (section 5.1).
 
@@ -53,11 +54,23 @@ One row per feature. Answer the three questions from section 8 of the plan with 
 | Public on the internet | Is it reachable from the public internet? |
 | In use over 6 months | Will it stay in use for more than six months? |
 
+## `effort.csv`
+
+Record the minutes **as soon as each step ends**, the same way as the *Time* column of `log.csv`: estimating them later is guesswork. One row per feature and step; if a step was done in several sittings, add the minutes up in one row.
+
+| Column | Values | Meaning |
+| --- | --- | --- |
+| Feature | exactly as in `log.csv` | Which feature |
+| Step | `Manual check` / `Tier 1` / `Tier 2` / `Tier 3` / `Classification` | Which step the time was spent on |
+| Minutes | a number, e.g. `25` or `2.5` | Hands-on time, including setup and recording results; for Tier 3 include the wait for the answer |
+
+A step that was skipped gets no row. Do not write `0` for it: `0` means the step was done and took no time.
+
 ## Checking and using the files
 
 ```bash
-python3 scripts/check-classification.py   # validate both files against log.csv
+python3 scripts/check-classification.py   # validate findings.csv, boundary.csv and effort.csv against log.csv
 python3 scripts/build-page.py             # rebuild index.html with the three tables
 ```
 
-`build-page.py` refuses to build while either file has problems. The tables count only what is filled in: problems without a verdict are left out and counted separately, and empty cells are shown as `+n ?`.
+`build-page.py` refuses to build while any of these files has problems. The tables count only what is filled in: problems without a verdict are left out and counted separately, and empty cells are shown as `+n ?`.

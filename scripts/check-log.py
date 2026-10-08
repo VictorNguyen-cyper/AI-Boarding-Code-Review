@@ -9,6 +9,10 @@ The second form exits 0 only when the feature already has a row in the log and
 its "Manual check" column is filled in. scripts/scan.sh uses it to refuse to
 scan before a human has recorded the result of the manual check.
 
+Warnings (printed, but not counted as problems) flag rows that already have
+findings while "Prompt rounds" or "Time" is still empty: those two values can
+only be recorded while the feature is being built (section 5.1).
+
 The script only reads the log; it never modifies it.
 """
 import csv
@@ -28,6 +32,7 @@ COLUMNS = [
 ]
 MANUAL_COLUMN = "Manual check"
 AFTER_MANUAL_COLUMNS = ["Automated scan findings", "AI review findings", "Bugs found later"]
+BUILD_COLUMNS = ["Prompt rounds", "Time"]
 MANUAL_VALUES = {"Pass", "Fail"}
 
 
@@ -90,6 +95,25 @@ def validate(path):
     return errors
 
 
+def warnings(path):
+    """Rows that already have findings but are missing values only knowable at build time."""
+    header, data = read(path)
+    if header != COLUMNS:
+        return []
+    result = []
+    for line_no, row in enumerate(data, start=2):
+        if len(row) != len(COLUMNS):
+            continue
+        cells = dict(zip(COLUMNS, row))
+        empty = [c for c in BUILD_COLUMNS if not cells[c]]
+        if empty and any(cells[c] for c in AFTER_MANUAL_COLUMNS):
+            result.append(
+                f"Line {line_no} ('{cells['Feature']}'): {', '.join(empty)} still empty. "
+                "Fill in now; it cannot be recovered later (section 5.1)."
+            )
+    return result
+
+
 def is_filled(path, name):
     header, data = read(path)
     if header != COLUMNS:
@@ -109,6 +133,8 @@ def main(argv):
         print(f"{path} not found.", file=sys.stderr)
         return 2
     errors = validate(path)
+    for w in warnings(path):
+        print(f"  warning: {w}")
     if errors:
         print(f"{path}: {len(errors)} problem(s)")
         for e in errors:
