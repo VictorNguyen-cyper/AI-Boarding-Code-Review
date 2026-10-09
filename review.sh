@@ -44,10 +44,12 @@ is_secret_file() {
   return 1
 }
 
-FILES=$(find "$CODE" -type f \
+# Paths are listed relative to <code-dir>, so the file sent to Gemini never contains
+# local absolute paths (user name, machine layout).
+FILES=$(cd "$CODE" && find . -type f \
   -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/dist/*' \
   -not -path '*/build/*' -not -path '*/.next/*' -not -path '*/venv/*' \
-  -not -path '*/.venv/*' -not -path '*/__pycache__/*' | sort)
+  -not -path '*/.venv/*' -not -path '*/__pycache__/*' | sed 's|^\./||' | sort)
 
 mkdir -p "$ROOT/review-input"
 
@@ -90,7 +92,22 @@ If there are no findings, write \"No findings\".
 
 ## Open questions
 
-List any information still needed for a complete review. If none, write \"None\"."
+List any information still needed for a complete review. If none, write \"None\".
+
+## Plain-language summary
+
+For a reader who is not a programmer. Use short sentences and everyday words; if a technical term is unavoidable, explain it in a few words. Base this section only on the findings above — add no new findings and give no verdict on whether the feature passes.
+
+- What this code does: <2-3 sentences>
+- Main concerns: <the most important findings, each in one plain sentence saying what could go wrong for users or the business, citing its criterion code>
+- Suggested direction: pick the 1-3 most serious concerns (highest severity first). For each one, write a small heading naming the concern, then a table with 2-3 possible ways to address it (in words, no code):
+
+  | Way | Advantages | Disadvantages |
+  | --- | --- | --- |
+
+  After each table, say which way you suggest and why, in 2-3 sentences. Always use this table; never list the ways as bullets.
+
+If there are no findings, write \"No concerns found\" under Main concerns and skip Suggested direction."
 
 {
   echo "===== INSTRUCTIONS ====="
@@ -109,9 +126,9 @@ List any information still needed for a complete review. If none, write \"None\"
     [ -n "$f" ] || continue
     if is_secret_file "$f"; then
       echo "===== FILE: $f (secret file — contents not sent) ====="
-    elif grep -Iq '' "$f" 2>/dev/null; then
+    elif grep -Iq '' "$CODE/$f" 2>/dev/null; then
       echo "===== FILE: $f ====="
-      cat "$f"
+      cat "$CODE/$f"
       echo
     fi
   done
