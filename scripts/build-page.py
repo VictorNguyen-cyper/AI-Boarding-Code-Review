@@ -277,6 +277,9 @@ def main(argv):
     if b_path.exists():
         bounds, b_errors = check_classification.validate_boundary(b_path, features)
         errors += b_errors
+    e_path = log.parent / "effort.csv"
+    if e_path.exists():
+        errors += check_classification.validate_effort(e_path, features)[1]
     if errors:
         print("fix these first (python3 scripts/check-classification.py):", file=sys.stderr)
         for e in errors:

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Validate findings.csv and boundary.csv — the human classification used by task T6.
+"""Validate findings.csv, boundary.csv and effort.csv — the human records used by task T6.
 
 Usage:
-    python3 scripts/check-classification.py [findings.csv] [boundary.csv] [log.csv]
+    python3 scripts/check-classification.py [findings.csv] [boundary.csv] [log.csv] [effort.csv]
 
-Both files are filled in by a human (rule A.1); see classification.md. Empty cells
-are allowed and mean "not classified yet". The script only reads; it never
-modifies any file.
+All three files are filled in by a human (rule A.1); see classification.md. Empty cells
+are allowed and mean "not classified yet". effort.csv is optional: it is checked
+only when it exists. The script only reads; it never modifies any file.
 """
 import importlib.util
 import re
@@ -23,12 +23,15 @@ SOURCES = ["Manual", "Tier 1", "Tier 2", "Tier 3", "Found later"]
 FINDING_COLUMNS = ["Feature", "Problem", "Criterion", "Severity", "Verdict", *SOURCES, "Classified on"]
 BOUNDARY_QUESTIONS = ["Real user data", "Public on the internet", "In use over 6 months"]
 BOUNDARY_COLUMNS = ["Feature", *BOUNDARY_QUESTIONS]
+EFFORT_STEPS = ["Manual check", "Tier 1", "Tier 2", "Tier 3", "Classification"]
+EFFORT_COLUMNS = ["Feature", "Step", "Minutes"]
 
 VERDICTS = {"Real", "False positive"}
 SEVERITIES = {"High", "Medium", "Low"}
 YES_NO = {"Yes", "No"}
 CRITERION = re.compile(r"^(C(0[1-9]|1[0-2])|Other)$")
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+MINUTES = re.compile(r"^\d+(\.\d+)?$")
 
 
 def criteria(cell):
@@ -109,6 +112,25 @@ def validate_boundary(path, features):
     return [r for _, r in rows], errors
 
 
+def validate_effort(path, features):
+    rows, errors = load(path, EFFORT_COLUMNS)
+    seen = {}
+    for line_no, r in rows:
+        where = f"{path} line {line_no}"
+        if not r["Feature"]:
+            errors.append(f"{where}: feature name is missing.")
+        elif r["Feature"] not in features:
+            errors.append(f"{where}: feature '{r['Feature']}' has no row in log.csv.")
+        check_value(errors, where, "Step", r["Step"], set(EFFORT_STEPS))
+        key = (r["Feature"], r["Step"])
+        if key in seen:
+            errors.append(f"{where}: duplicate of line {seen[key]} (same feature and step) — add the minutes up in one row.")
+        seen.setdefault(key, line_no)
+        if r["Minutes"] and not MINUTES.match(r["Minutes"]):
+            errors.append(f"{where}: 'Minutes' must be a number of minutes, e.g. 25 or 2.5, got '{r['Minutes']}'.")
+    return [r for _, r in rows], errors
+
+
 def features_in(log):
     header, data = check_log.read(log)
     return {r[0] for r in data if r and r[0]} if header else set()
@@ -118,14 +140,19 @@ def main(argv):
     findings = argv[0] if len(argv) > 0 else ROOT / "findings.csv"
     boundary = argv[1] if len(argv) > 1 else ROOT / "boundary.csv"
     log = argv[2] if len(argv) > 2 else ROOT / "log.csv"
+    effort = argv[3] if len(argv) > 3 else ROOT / "effort.csv"
     features = features_in(log)
     errors = validate_findings(findings, features)[1] + validate_boundary(boundary, features)[1]
+    checked = [findings, boundary]
+    if Path(effort).exists():
+        errors += validate_effort(effort, features)[1]
+        checked.append(effort)
     if errors:
         print(f"{len(errors)} problem(s)")
         for e in errors:
             print(f"  - {e}")
         return 1
-    print(f"{findings}, {boundary}: valid.")
+    print(f"{', '.join(str(c) for c in checked)}: valid.")
     return 0
 
 

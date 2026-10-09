@@ -30,11 +30,12 @@ During review, **the feature's source code is uploaded to Google's servers**.
 
 In the model picker on gemini.google.com, **choose the Pro model**, since Tier 3 needs deep reasoning.
 
-**Keep exactly one model for the whole project.** Switching models midway makes Tier 3 figures for different features incomparable.
+**Keep exactly one model and one output language for the whole project.** Switching either midway makes Tier 3 figures for different features incomparable (see section 3).
 
 | Item | Value |
 | --- | --- |
 | Reviewing model | *(fill in the exact name shown in Gemini)* |
+| Output language for research runs | *(fill in one `--lang` value)* |
 | Date chosen | *(fill in)* |
 | Mentor approved sending code externally | *(fill in date)* |
 
@@ -53,6 +54,8 @@ Students on this project come from different countries, so the AI's answer can b
 Only headings and descriptions are translated. Criterion codes (C01–C12), answers (Yes / No / Insufficient information), severity (High / Medium / Low), file paths and code identifiers always stay in English, so results from different students can be compared and copied into `log.csv` without translation.
 
 All repository files, scripts, `log.csv` columns and log entries are in English regardless of the output language you choose.
+
+**For research data, choose one language and never change it.** The output language changes the prompt, and the model may reason and report differently in different languages. Mixing languages across features adds a variable the study does not measure, the same problem as switching models. Record the chosen value in section 2 and pass the same `--lang` for every feature in `log.csv`. If you need the result in another language to read it, translate the saved answer. Do not run the review again.
 
 ---
 

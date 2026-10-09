@@ -1,0 +1,59 @@
+# Accepting AI-generated software — a three-tier process
+
+An internship study: when most of the code is AI-generated and nobody reads all of it, how do you accept it? Each feature goes through a manual check and three tiers of verification, and every step is logged so the gap between "looks fine" and "is fine" can be measured.
+
+The full plan (in Vietnamese) is `ke-hoach-du-an-thuc-tap.docx`. Section numbers quoted throughout this repository ("section 5.1", "rule A.1") refer to it.
+
+## Ground rules (rule A.1)
+
+- Only a human fills in *Manual check*, and **before** any scan runs.
+- Only a human decides whether a finding is real or a false positive.
+- No real source code, customer names or internal module names in any committed file. Leave unknown cells empty; never invent data.
+
+## Per-feature workflow
+
+```
+build the feature with AI
+  │
+  ├─ 1. log.csv: add the row; fill Prompt rounds, Time, Manual check (Pass/Fail)
+  ├─ 2. Tier 1  scripts/scan.sh "<feature>" <code-dir>          → Automated scan findings
+  ├─ 3. Tier 2  test-case-<feature>.md (from templates/)        → run the cases by hand
+  ├─ 4. Tier 3  ./review.sh <feature> requirements-<feature>.md <code-dir>
+  │             → upload to Gemini, paste the answer into review-<feature>.md → AI review findings
+  ├─ 5. findings.csv, boundary.csv: human classification
+  ├─ 6. effort.csv: minutes spent on each step
+  └─ 7. one week later: Bugs found later
+```
+
+Record the minutes for `effort.csv` and the values for `log.csv` as each step ends. They cannot be recovered afterwards.
+
+When enough features are logged, build the results page and write the report:
+
+```bash
+python3 scripts/check-log.py              # validate log.csv
+python3 scripts/check-classification.py   # validate findings.csv, boundary.csv, effort.csv
+python3 scripts/build-page.py             # rebuild index.html with the four result tables
+```
+
+## Files
+
+| File | What it is | Guide |
+| --- | --- | --- |
+| `log.csv` | Development log, one row per feature, exactly 8 columns | plan section 5.1 |
+| `checklist.md` | The 12 review criteria (C01–C12) used by Tier 3 | — |
+| `automated-scanning.md` | Tier 1: install and run gitleaks, trivy, semgrep | — |
+| `templates/test-case-template.md` | Tier 2: template for per-feature test cases | — |
+| `ai-review.md` | Tier 3: running the review on Gemini | — |
+| `classification.md` | How to fill in `findings.csv`, `boundary.csv`, `effort.csv` | — |
+| `report-outline.md` | Skeleton of the final 8–12 page report | — |
+| `index.html` | Results page, generated — do not edit by hand | `scripts/build-page.py` |
+| `demo/` | A trial run on a fake app. **Not research data.** | `demo/README.md` |
+
+## First-time setup
+
+```bash
+brew install gitleaks semgrep trivy
+git config core.hooksPath .githooks   # blocks secret leaks and an invalid log.csv at commit time
+```
+
+Before the first Tier 3 run, fill in the model, the output language and the mentor's approval in `ai-review.md` section 2.

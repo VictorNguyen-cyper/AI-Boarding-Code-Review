@@ -1,12 +1,12 @@
 # Report outline (task T8)
 
-> **This is a skeleton, not the report.** Every section lists what to write and where the material comes from. It contains no results: findings, figures and conclusions are written by the student from `log.csv` and `results.md` (task T6) once the data exists (rule A.1).
+> **This is a skeleton, not the report.** Every section lists what to write and where the material comes from. It contains no results: findings, figures and conclusions are written by the student from `log.csv` and the result tables in `index.html` (tasks T6–T7, built by `scripts/build-page.py`) once the data exists (rule A.1).
 
 **Target length:** 8–12 pages of PDF, readable on its own without any attachment (section 7 of the project plan). The page budget per section is a guide; adjust it, but keep section 6 (Results) the largest.
 
 **Rules while writing:**
 
-- Every figure must come from `log.csv` or `results.md`. If a cell is missing, say it is missing; do not estimate.
+- Every figure must come from `log.csv`, `effort.csv` or the tables in `index.html`. If a cell is missing, say it is missing; do not estimate.
 - Present results as a **case study with figures**, not inferential statistics (section 8). Write "in N features, …", never "X% of AI-generated code …".
 - No real source code, customer names, internal module names or other identifying information (rule A.1). Use the anonymised log.
 - Do not reuse anything from `demo/` — it is illustration, not research data.
@@ -86,30 +86,30 @@
 
 ## 6. Results (≈ 3–4 pages)
 
-*Sources: `results.md` (task T6), `log.csv`, `findings.csv`, `boundary.csv`. Page `index.html` (task T7) shows the tables built directly from these files.*
+*Sources: `log.csv`, `findings.csv`, `boundary.csv`, `effort.csv`. `scripts/build-page.py` builds the four tables directly from these files into `index.html` (tasks T6–T7); rebuild it before copying any table.*
 
 Open with one sentence on the sample: how many features, over how many weeks. *(fill in)*
 
 ### 6.1 Comparison table — passed by eye, yet issues found
 
-- Insert the table from `results.md`.
+- Insert the table from `index.html`.
 - 2–4 sentences of reading: what the gap is, in "N of M features" form.
 - Name the cells that are missing data and why.
 
 ### 6.2 Classification table — what tools catch vs. what only people catch
 
-- Insert the table from `results.md`.
+- Insert the table from `index.html`.
 - One short example per category, anonymised, in plain words (no code).
 
 ### 6.3 Reliability table — Tier 3 true and false positives
 
-- Insert the table from `results.md`.
+- Insert the table from `index.html`.
 - Which criteria produced the most false positives, and a likely reason.
 - If two models were cross-checked: where they disagreed and what those disagreements turned out to be.
 
 ### 6.4 Boundary table — when the full process is needed
 
-- Insert the table from `results.md`, built on the three questions: touches real user data? public on the internet? kept in use for more than six months?
+- Insert the table from `index.html`, built on the three questions: touches real user data? public on the internet? kept in use for more than six months?
 - Which combinations justify the full three tiers and which can rely on manual checking.
 
 ### 6.5 Bugs found after one week
@@ -125,7 +125,7 @@ Open with one sentence on the sample: how many features, over how many weeks. *(
 ## 8. Conclusions and recommendations (≈ 1 page)
 
 - Answer each of the four specific objectives from section 2, one short paragraph each, pointing to the table that supports it.
-- **The short checklist** for future interns: the final list, or a pointer to the appendix if it is longer than half a page. *(fill in — derived from the results, not from the plan)*
+- **The short checklist** for future interns: the final list, or a pointer to the appendix if it is longer than half a page. Justify keeping or dropping each tier with what it caught (section 6) against the minutes it cost (`effort.csv`). *(fill in — derived from the results, not from the plan)*
 
 ## 9. Value to the school (exactly 1 page, can be read alone)
 
