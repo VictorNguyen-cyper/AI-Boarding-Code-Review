@@ -99,6 +99,9 @@ def validate_findings(path, features):
         if r["Classified on"] and not DATE.match(r["Classified on"]):
             errors.append(f"{where}: 'Classified on' must be YYYY-MM-DD.")
         check_value(errors, where, "Second verdict", r["Second verdict"], VERDICTS)
+        if r["Second verdict"] and not r["Verdict"]:
+            errors.append(f"{where}: 'Second verdict' is filled but 'Verdict' is empty; "
+                          "only rows that already have a verdict are sampled.")
     return [r for _, r in rows], errors
 
 
