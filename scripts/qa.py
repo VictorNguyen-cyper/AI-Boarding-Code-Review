@@ -2,7 +2,7 @@
 """Project status for the 3-tier acceptance process.
 
 Usage (normally through ./qa in the repository root):
-    python3 scripts/qa.py [--log P] [--findings P] [--boundary P]
+    python3 scripts/qa.py [--log P] [--findings P] [--boundary P] [--today YYYY-MM-DD]
 
 Shows, for every feature in log.csv, which steps are done and what to do next.
 Classification follows classification.md (findings.csv, boundary.csv); the files
@@ -14,6 +14,7 @@ as true or false (rule A.1).
 import argparse
 import importlib.util
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -67,9 +68,14 @@ def status(args):
     def mark(ok):
         return "✓" if ok else "·"
 
-    print("(✓ done, · not yet)\n")
+    today = check_classification.parse_date(args.today) if args.today else date.today()
+    if today is None:
+        print(f"--today must be a date YYYY-MM-DD, got '{args.today}'.")
+        return 2
+    print(f"Status on {today.isoformat()}  (✓ done, · not yet)\n")
     print(f"{'Feature':<28} Manual T1 T2 T3  Classified  Boundary  Next step")
     print("-" * 96)
+    due = []
     for row in features:
         name = row["Feature"]
         manual = bool(row["Manual check"])
@@ -98,10 +104,21 @@ def status(args):
             step = f"Fill 'Verdict' for {len(mine) - classified} problem(s) in findings.csv"
         elif not bounded:
             step = "Answer the 3 boundary questions in boundary.csv"
-        elif not row["Bugs found later"]:
-            step = "After one week of real use, fill 'Bugs found later' in log.csv"
-        else:
+        elif row["Bugs found later"]:
             step = "Complete"
+        elif not answers.get("Live since"):
+            step = f"Fill 'Live since' in boundary.csv when it goes into real use (or '{check_classification.NOT_LIVE}')"
+        elif answers["Live since"] == check_classification.NOT_LIVE:
+            step = "Not live: no one-week check; report it as missing data"
+        else:
+            due_on = check_classification.parse_date(answers["Live since"]) + timedelta(
+                days=check_classification.FOLLOW_UP_DAYS
+            )
+            if today >= due_on:
+                due.append(name)
+                step = "DUE: fill 'Bugs found later' in log.csv ('(no findings)' if nothing broke)"
+            else:
+                step = f"Wait until {due_on}, then fill 'Bugs found later' in log.csv"
 
         print(
             f"{name[:28]:<28} {mark(manual):^6} {mark(t1):^2} {mark(t2):^2} {mark(t3):^2}  "
@@ -109,6 +126,8 @@ def status(args):
         )
 
     print()
+    if due:
+        print(f"⚠ One-week follow-up due: {', '.join(due)}")
     complete = sum(1 for r in features if r["Bugs found later"])
     print(f"{len(features)} feature(s) logged; {complete} with 'Bugs found later' filled. Plan target: 15–25.")
     return 0
@@ -119,6 +138,7 @@ def main(argv):
     p.add_argument("--log", default=str(ROOT / "log.csv"))
     p.add_argument("--findings", default=str(ROOT / "findings.csv"))
     p.add_argument("--boundary", default=str(ROOT / "boundary.csv"))
+    p.add_argument("--today", help="override today's date (YYYY-MM-DD), for testing")
     return status(p.parse_args(argv))
 
 
