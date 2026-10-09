@@ -17,6 +17,8 @@
 | `log-DEMO.csv` | — | One log row with exactly the 8 columns |
 | `test-case-view-orders-DEMO.md` | 2 | 14 cases in the 6 groups, with real run results |
 | `review-view-orders-DEMO.md` | 3 | Review against the 12 criteria, in the `checklist.md` format (not via Gemini) |
+| `requirements-view-orders-DEMO.md` | 3 | Sample requirements file, input for `review.sh` |
+| `review-view-orders-DEMO-gemini.md` | 3 | Skeleton created by `review.sh --lang vi`, waiting for Gemini's answer |
 | `comparison-DEMO.md` | — | Which problems each tier caught |
 | `demo.html` | — | Summary page, open directly in a browser |
 | `run_tier2.py`, `build_page.py`, `tier2.json` | — | Tier 2 runner, page builder, raw results |
