@@ -62,7 +62,7 @@ The requirement does not say the following. Note how the built feature behaves, 
 | ID | Steps | Expected result | Actual result | Pass? |
 | --- | --- | --- | --- | --- |
 | TC-31 | Slow 3G, intern submits | Button shows it is working or is disabled; one success message in the end | | |
-| TC-32 | Go offline right after clicking submit | Clear error; going back online and resubmitting works and does not create two rows | | |
+| TC-32 | Go offline right after clicking submit | Clear error; going back online and resubmitting works and does not create two rows | Browser's own "site can't be reached" page; the app shows no message of its own. The error page replaces the form in history (form posts to the same URL), so Back skips the form and typed data is lost. Reload after going back online resubmits: 1 row. If the request reached the server but the reply was lost, resubmitting shows "This email is already registered for this term." — still 1 row. | Pass |
 | TC-33 | Slow 3G, manager opens a list with ≥ 200 registrations | Page loads in a reasonable time and stays usable | | |
 
 ## 5. Duplicate actions
