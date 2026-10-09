@@ -34,10 +34,10 @@ In the model picker on gemini.google.com, **choose the Pro model**, since Tier 3
 
 | Item | Value |
 | --- | --- |
-| Reviewing model | *(fill in the exact name shown in Gemini)* |
+| Reviewing model | 3.1 Pro, with "Extended thinking" on |
 | Output language for research runs | *(fill in one `--lang` value)* |
-| Date chosen | *(fill in)* |
-| Mentor approved sending code externally | *(fill in date)* |
+| Date chosen | 2026-10-07 |
+| Mentor approved sending code externally | 2026-10-07 |
 
 ---
 
