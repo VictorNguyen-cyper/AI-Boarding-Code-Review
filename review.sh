@@ -36,6 +36,13 @@ INPUT="$ROOT/review-input/review-$NAME.txt"
 [ -d "$CODE" ] || { echo "Code directory not found: $CODE" >&2; exit 1; }
 [ -e "$RESULT" ] && { echo "$RESULT already exists — not overwriting an earlier review result." >&2; exit 1; }
 
+# Same rule as scripts/scan.sh: the manual check must be recorded before any tier runs.
+if ! python3 "$ROOT/scripts/check-log.py" --filled "$NAME" "${LOG:-$ROOT/log.csv}"; then
+  echo "No row '$NAME' in log.csv, or its 'Manual check' column is empty." >&2
+  echo "Fill in 'Pass' / 'Fail' BEFORE reviewing (section 5.1 of the project plan)." >&2
+  exit 1
+fi
+
 # Secret files: send the name only (needed for C01), never the contents.
 is_secret_file() {
   case "$(basename "$1")" in

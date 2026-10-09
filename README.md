@@ -10,6 +10,8 @@ The full plan (in Vietnamese) is `ke-hoach-du-an-thuc-tap.docx`. Section numbers
 - Only a human decides whether a finding is real or a false positive.
 - No real source code, customer names or internal module names in any committed file. Leave unknown cells empty; never invent data.
 
+**Start here:** run `./qa status`. It lists every feature, which steps are done, and the next step to take. `./qa help` lists the other commands (`check`, `scan`, `review`, `page`).
+
 ## Per-feature workflow
 
 ```
@@ -30,9 +32,8 @@ Record the minutes for `effort.csv` and the values for `log.csv` as each step en
 When enough features are logged, build the results page and write the report:
 
 ```bash
-python3 scripts/check-log.py              # validate log.csv
-python3 scripts/check-classification.py   # validate findings.csv, boundary.csv, effort.csv
-python3 scripts/build-page.py             # rebuild index.html with the four result tables
+./qa check   # validate log.csv, findings.csv, boundary.csv, effort.csv
+./qa page    # rebuild index.html with the four result tables
 ```
 
 ## Files
