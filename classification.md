@@ -35,6 +35,7 @@ Fill it in **after** the feature's row in `log.csv` is complete (all tiers run).
 | Tier 3 | Yes / No | Reported by the AI review? |
 | Found later | Yes / No | Did it surface during the week of real use? |
 | Classified on | YYYY-MM-DD | Date of the verdict |
+| Second verdict | Real / False positive | Independent verdict by a second person, only for sampled rows (see below) |
 
 **How to decide the Verdict:**
 
@@ -44,15 +45,29 @@ Fill it in **after** the feature's row in `log.csv` is complete (all tiers run).
 
 **Problems missed by a tier still get a row.** For example, a bug found after one week that no tier reported gets *Found later* = Yes and *Tier 1/2/3* = No. These rows are what show each tier's blind spots.
 
+### Second opinion
+
+When one person builds, checks and classifies, every verdict is that person's judgement alone. To measure how far it can be trusted, a second person (normally the mentor) classifies a random sample independently:
+
+1. Run `python3 scripts/sample-second-opinion.py`. It picks 20% of the rows that have a *Verdict* but no *Second verdict* (at least one), and prints them **without** the first verdict.
+2. Record the printed seed in your notes so the sample can be drawn again.
+3. Give the list to the second person. They answer Real / False positive without seeing your verdict, and without discussing it with you first.
+4. Write their answers in *Second verdict*. Never change your own *Verdict* afterwards because of theirs; the disagreement is the result.
+
+`index.html` shows how many sampled verdicts agreed. Run the sampling once near the end of the data collection (week 4), when most rows have a verdict.
+
 ## `boundary.csv`
 
-One row per feature. Answer the three questions from section 8 of the plan with Yes / No:
+One row per feature. Answer the three questions from section 8 of the plan with Yes / No, and record when the feature went into real use:
 
 | Column | Question |
 | --- | --- |
 | Real user data | Does the feature touch real user data? |
 | Public on the internet | Is it reachable from the public internet? |
 | In use over 6 months | Will it stay in use for more than six months? |
+| Live since | When did real use start? `YYYY-MM-DD`, or `Not live` if the feature will not be used for real |
+
+*Bugs found later* (section 5.3) is the only objective arbiter, and it needs a start date. Fill in *Live since* on the day the feature goes into real use. Once a week has passed, `check-classification.py` warns until *Bugs found later* is filled in `log.csv` (`(no findings)` if nothing broke). A feature marked `Not live` has no one-week check. Say so in the report instead of counting it as "no bugs".
 
 ## `effort.csv`
 

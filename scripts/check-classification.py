@@ -7,10 +7,14 @@ Usage:
 All three files are filled in by a human (rule A.1); see classification.md. Empty cells
 are allowed and mean "not classified yet". effort.csv is optional: it is checked
 only when it exists. The script only reads; it never modifies any file.
+
+Warnings (printed, but not counted as problems) flag features that have been
+live for a week while "Bugs found later" in log.csv is still empty.
 """
 import importlib.util
 import re
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -20,9 +24,12 @@ check_log = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(check_log)
 
 SOURCES = ["Manual", "Tier 1", "Tier 2", "Tier 3", "Found later"]
-FINDING_COLUMNS = ["Feature", "Problem", "Criterion", "Severity", "Verdict", *SOURCES, "Classified on"]
+FINDING_COLUMNS = ["Feature", "Problem", "Criterion", "Severity", "Verdict", *SOURCES, "Classified on",
+                   "Second verdict"]
 BOUNDARY_QUESTIONS = ["Real user data", "Public on the internet", "In use over 6 months"]
-BOUNDARY_COLUMNS = ["Feature", *BOUNDARY_QUESTIONS]
+BOUNDARY_COLUMNS = ["Feature", *BOUNDARY_QUESTIONS, "Live since"]
+NOT_LIVE = "Not live"
+FOLLOW_UP_DAYS = 7
 EFFORT_STEPS = ["Manual check", "Tier 1", "Tier 2", "Tier 3", "Classification"]
 EFFORT_COLUMNS = ["Feature", "Step", "Minutes"]
 
@@ -91,6 +98,7 @@ def validate_findings(path, features):
             errors.append(f"{where}: no source column is 'Yes' — record at least who found it.")
         if r["Classified on"] and not DATE.match(r["Classified on"]):
             errors.append(f"{where}: 'Classified on' must be YYYY-MM-DD.")
+        check_value(errors, where, "Second verdict", r["Second verdict"], VERDICTS)
     return [r for _, r in rows], errors
 
 
@@ -109,7 +117,34 @@ def validate_boundary(path, features):
         seen.setdefault(name, line_no)
         for q in BOUNDARY_QUESTIONS:
             check_value(errors, where, q, r[q], YES_NO)
+        if r["Live since"] and r["Live since"] != NOT_LIVE and not parse_date(r["Live since"]):
+            errors.append(f"{where}: 'Live since' must be YYYY-MM-DD or '{NOT_LIVE}'.")
     return [r for _, r in rows], errors
+
+
+def parse_date(s):
+    if not DATE.match(s):
+        return None
+    try:
+        return date.fromisoformat(s)
+    except ValueError:
+        return None
+
+
+def follow_up_warnings(bounds, log, today=None):
+    """Features live for a week or more whose 'Bugs found later' cell is still empty."""
+    header, data = check_log.read(log)
+    if header != check_log.COLUMNS:
+        return []
+    later = {r[0]: r[check_log.COLUMNS.index("Bugs found later")] for r in data if len(r) == len(header)}
+    today = today or date.today()
+    result = []
+    for b in bounds:
+        since = parse_date(b["Live since"])
+        if since and today >= since + timedelta(days=FOLLOW_UP_DAYS) and not later.get(b["Feature"]):
+            result.append(f"'{b['Feature']}' has been live since {since.isoformat()}: "
+                          "record 'Bugs found later' in log.csv, or '(no findings)' if nothing broke.")
+    return result
 
 
 def validate_effort(path, features):
@@ -142,11 +177,14 @@ def main(argv):
     log = argv[2] if len(argv) > 2 else ROOT / "log.csv"
     effort = argv[3] if len(argv) > 3 else ROOT / "effort.csv"
     features = features_in(log)
-    errors = validate_findings(findings, features)[1] + validate_boundary(boundary, features)[1]
+    bounds, b_errors = validate_boundary(boundary, features)
+    errors = validate_findings(findings, features)[1] + b_errors
     checked = [findings, boundary]
     if Path(effort).exists():
         errors += validate_effort(effort, features)[1]
         checked.append(effort)
+    for w in follow_up_warnings(bounds, log):
+        print(f"  warning: {w}")
     if errors:
         print(f"{len(errors)} problem(s)")
         for e in errors:

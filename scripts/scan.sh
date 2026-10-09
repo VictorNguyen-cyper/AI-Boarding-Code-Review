@@ -60,11 +60,18 @@ semgrep --config=p/security-audit --config=p/secrets --quiet --metrics=off \
 
 finished=$(date +%s)
 
-python3 - "$OUT" "$NAME" "$((finished - started))" "$(cd "$SOURCE" && pwd)" <<'PY'
+# Which version of the code was scanned, so every tier can be traced to the same code.
+if COMMIT=$(git -C "$SOURCE" rev-parse --short HEAD 2>/dev/null); then
+  [ -z "$(git -C "$SOURCE" status --porcelain -- . 2>/dev/null)" ] || COMMIT="$COMMIT (plus uncommitted changes)"
+else
+  COMMIT="not a git repository"
+fi
+
+python3 - "$OUT" "$NAME" "$((finished - started))" "$(cd "$SOURCE" && pwd)" "$COMMIT" <<'PY'
 import json, os, sys
 from pathlib import Path
 
-out, name, seconds, source = Path(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
+out, name, seconds, source, commit = Path(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
 
 def relative(path):
     # Record paths relative to the source directory so local machine paths are not exposed.
@@ -89,6 +96,7 @@ for f in (load("semgrep-report.json") or {}).get("results") or []:
 
 summary = "\n".join([
     f"Feature: {name}",
+    f"Code version: {commit}",
     f"Time for one full scan: {seconds} seconds",
     f"Findings: {len(lines)}",
     "",

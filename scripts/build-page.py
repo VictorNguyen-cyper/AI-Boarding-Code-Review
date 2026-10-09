@@ -127,6 +127,17 @@ def reliability_table(probs):
                   "Real problems Tier 3 missed"], body)
 
 
+def agreement_note(probs):
+    """How often the independent second classifier agreed with the first verdict."""
+    both = [p for p in probs if p["Verdict"] and p["Second verdict"]]
+    if not both:
+        return '<p class="sub">Second opinion: no problem has been re-classified independently yet.</p>'
+    agree = sum(1 for p in both if p["Verdict"] == p["Second verdict"])
+    with_verdict = sum(1 for p in probs if p["Verdict"])
+    return (f'<p class="sub">Second opinion: an independent classifier re-checked {len(both)} of '
+            f"{with_verdict} classified problem(s) and agreed on {agree} of {len(both)}.</p>")
+
+
 def boundary_table(bounds, probs, rows):
     """Features grouped by their answers to the three boundary questions."""
     if not bounds:
@@ -242,6 +253,7 @@ td ul{{margin:0;padding-left:18px}}code{{font-size:12.5px}}.miss{{color:var(--mu
 
 <h2>3. Reliability of the AI review (Tier 3)</h2>
 {section(reliability, "findings.csv has no rows yet.", "a human verdict (Real / False positive) for each Tier 3 finding")}
+{agreement_note(probs) if reliability else ""}
 
 <h2>4. Where the full process applies</h2>
 {section(boundary, "boundary.csv has no rows yet.", "per-feature answers to: touches real user data? public on the internet? kept in use for more than six months?")}

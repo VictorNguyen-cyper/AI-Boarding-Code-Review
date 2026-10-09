@@ -143,6 +143,13 @@ If there are no findings, write \"No concerns found\" under Main concerns and sk
 
 FILE_COUNT=$(echo "$FILES" | grep -c . || true)
 
+# Which version of the code was reviewed, so every tier can be traced to the same code.
+if COMMIT=$(git -C "$CODE" rev-parse --short HEAD 2>/dev/null); then
+  [ -z "$(git -C "$CODE" status --porcelain -- . 2>/dev/null)" ] || COMMIT="$COMMIT (plus uncommitted changes)"
+else
+  COMMIT='*(not a git repository — fill in how this version can be identified)*'
+fi
+
 {
   echo "# Tier 3 review — $NAME"
   echo
@@ -151,6 +158,7 @@ FILE_COUNT=$(echo "$FILES" | grep -c . || true)
   echo "- Output language: $LANG_CODE"
   echo "- Requirements file: $(basename "$REQUIREMENTS")"
   echo "- Code files sent: $FILE_COUNT"
+  echo "- Code version: $COMMIT"
   echo "- Time waiting for Gemini's answer: *(fill in, in seconds)*"
   echo
   echo "> The result below is AI-generated and has not yet been classified true/false by a human."

@@ -22,9 +22,9 @@ build the feature with AI
   ├─ 3. Tier 2  test-case-<feature>.md (from templates/)        → run the cases by hand
   ├─ 4. Tier 3  ./review.sh <feature> requirements-<feature>.md <code-dir>
   │             → upload to Gemini, paste the answer into review-<feature>.md → AI review findings
-  ├─ 5. findings.csv, boundary.csv: human classification
+  ├─ 5. findings.csv, boundary.csv: human classification; boundary.csv: Live since
   ├─ 6. effort.csv: minutes spent on each step
-  └─ 7. one week later: Bugs found later
+  └─ 7. one week after Live since: Bugs found later (check-classification.py reminds you)
 ```
 
 Record the minutes for `effort.csv` and the values for `log.csv` as each step ends. They cannot be recovered afterwards.
@@ -32,8 +32,9 @@ Record the minutes for `effort.csv` and the values for `log.csv` as each step en
 When enough features are logged, build the results page and write the report:
 
 ```bash
-./qa check   # validate log.csv, findings.csv, boundary.csv, effort.csv
-./qa page    # rebuild index.html with the four result tables
+./qa check                                # validate log.csv, findings.csv, boundary.csv, effort.csv
+python3 scripts/sample-second-opinion.py  # week 4: random 20% for the mentor's independent verdict
+./qa page                                 # rebuild index.html with the four result tables
 ```
 
 ## Files
