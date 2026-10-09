@@ -51,10 +51,12 @@ is_secret_file() {
   return 1
 }
 
-FILES=$(find "$CODE" -type f \
+# Paths are listed relative to <code-dir>, so the file sent to Gemini never contains
+# local absolute paths (user name, machine layout).
+FILES=$(cd "$CODE" && find . -type f \
   -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/dist/*' \
   -not -path '*/build/*' -not -path '*/.next/*' -not -path '*/venv/*' \
-  -not -path '*/.venv/*' -not -path '*/__pycache__/*' | sort)
+  -not -path '*/.venv/*' -not -path '*/__pycache__/*' | sed 's|^\./||' | sort)
 
 mkdir -p "$ROOT/review-input"
 
@@ -131,9 +133,9 @@ If there are no findings, write \"No concerns found\" under Main concerns and sk
     [ -n "$f" ] || continue
     if is_secret_file "$f"; then
       echo "===== FILE: $f (secret file — contents not sent) ====="
-    elif grep -Iq '' "$f" 2>/dev/null; then
+    elif grep -Iq '' "$CODE/$f" 2>/dev/null; then
       echo "===== FILE: $f ====="
-      cat "$f"
+      cat "$CODE/$f"
       echo
     fi
   done

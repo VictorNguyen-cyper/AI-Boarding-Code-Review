@@ -1,97 +1,60 @@
-# 3-tier acceptance process for AI-generated code
+# Accepting AI-generated software — a three-tier process
 
-How to accept software when most of its code was written by AI and nobody reads all of it.
-The full rationale is in `ke-hoach-du-an-thuc-tap.docx` (project plan, Vietnamese).
+An internship study: when most of the code is AI-generated and nobody reads all of it, how do you accept it? Each feature goes through a manual check and three tiers of verification, and every step is logged so the gap between "looks fine" and "is fine" can be measured.
 
-**Start here:** run `./qa status`. It lists every feature, which steps are done, and the next step to take.
+The full plan (in Vietnamese) is `ke-hoach-du-an-thuc-tap.docx`. Section numbers quoted throughout this repository ("section 5.1", "rule A.1") refer to it.
 
----
+## Ground rules (rule A.1)
 
-## Three rules you must never break
+- Only a human fills in *Manual check*, and **before** any scan runs.
+- Only a human decides whether a finding is real or a false positive.
+- No real source code, customer names or internal module names in any committed file. Leave unknown cells empty; never invent data.
 
-1. **Fill in *Manual check* (`Pass` / `Fail`) before running any tier.** Filled in afterwards, the control column is worthless. `./qa scan` and `./qa review` refuse to run until it is filled in.
-2. **Give the reviewing AI the requirements, never the original prompt.** Otherwise it just confirms itself.
-3. **Tools and AI never decide whether a finding is true or false.** Only a human fills *Verdict* in `findings.csv`.
+**Start here:** run `./qa status`. It lists every feature, which steps are done, and the next step to take. `./qa help` lists the other commands (`check`, `scan`, `review`, `page`).
 
----
+## Per-feature workflow
 
-## One-time setup
-
-```bash
-brew install gitleaks semgrep trivy          # Tier 1 scanners (automated-scanning.md §0)
-git config core.hooksPath .githooks          # blocks leaked secrets and invalid data files
+```
+build the feature with AI
+  │
+  ├─ 1. log.csv: add the row; fill Prompt rounds, Time, Manual check (Pass/Fail)
+  ├─ 2. Tier 1  scripts/scan.sh "<feature>" <code-dir>          → Automated scan findings
+  ├─ 3. Tier 2  test-case-<feature>.md (from templates/)        → run the cases by hand
+  ├─ 4. Tier 3  ./review.sh <feature> requirements-<feature>.md <code-dir>
+  │             → upload to Gemini, paste the answer into review-<feature>.md → AI review findings
+  ├─ 5. findings.csv, boundary.csv: human classification
+  ├─ 6. effort.csv: minutes spent on each step
+  └─ 7. one week later: Bugs found later
 ```
 
-Then fill in section 2 of `ai-review.md` (reviewing model, date, mentor approval to send code).
+Record the minutes for `effort.csv` and the values for `log.csv` as each step ends. They cannot be recovered afterwards.
 
----
+When enough features are logged, build the results page and write the report:
 
-## Steps for each feature
+```bash
+./qa check   # validate log.csv, findings.csv, boundary.csv, effort.csv
+./qa page    # rebuild index.html with the four result tables
+```
 
-| # | Step | What to do | Writes to |
-| --- | --- | --- | --- |
-| 1 | Log it | Add a row to `log.csv`: *Feature*, *Requirement*, *Prompt rounds*, *Time* | `log.csv` |
-| 2 | Manual check | Try the feature by hand, then fill *Manual check* — **before step 3** | `log.csv` |
-| 3 | Tier 1 — scan | `./qa scan "<feature>" <code dir>` and paste `summary.txt` | `log.csv`, `findings.csv` |
-| 4 | Tier 2 — test cases | Copy `templates/test-case-template.md` to `test-case-<feature>.md`, run every case | `test-case-<feature>.md`, `findings.csv` |
-| 5 | Tier 3 — AI review | `./qa review --lang vi "<feature>" requirements-<feature>.md <code dir>`, then follow `ai-review.md` §5 | `review-<feature>.md`, `log.csv`, `findings.csv` |
-| 6 | Classify | For each row in `findings.csv`, fill *Verdict* and *Classified on* | `findings.csv` |
-| 7 | Boundary | Answer the 3 boundary questions (real user data? public internet? over 6 months?) | `features.csv` |
-| 8 | Ship | When the feature goes into real use, fill *Shipped on* | `features.csv` |
-| 9 | One week later | `./qa status` shows **DUE**; fill *Bugs found later* in `log.csv` (`None` if nothing broke) and *Follow-up checked on*. Add each bug to `findings.csv` with `Tier` = `Later` | `log.csv`, `features.csv`, `findings.csv` |
+## Files
 
-Run `./qa check` any time to validate the three data files (the pre-commit hook runs it too).
-
-Week 4: `./qa report` builds `results.md` with the four result tables of plan section 8 (task T6). It uses only what is in the data files, marks anything it cannot compute as *missing*, and leaves unclassified findings out of every true / false figure. See `demo/results-DEMO.md` for an example.
-
----
-
-## Data files
-
-**`log.csv`**: one row per feature, with exactly the 8 columns of section 5.1 of the plan. Do not add columns.
-
-**`findings.csv`**: one row per finding from any tier. This is what the reliability table (true- / false-positive rate) and the classification table are built from.
-
-| Column | Values |
-| --- | --- |
-| Feature | Same name as in `log.csv` |
-| Tier | `1`, `2`, `3`, or `Later` for a bug that showed up after shipping |
-| Source | Tool (`gitleaks`, `trivy`, `semgrep`), test case ID (`TC-21`), reviewing model, or who reported a later bug |
-| Criterion | `C01`–`C12` from `checklist.md`, or empty if none matches |
-| Location | `file:line`, endpoint or package. **Never** a secret value |
-| Severity | `Critical`, `High`, `Medium`, `Low`, or empty |
-| Verdict | Empty until a human classifies it: `True positive`, `False positive` or `Unsure` |
-| Classified on | Date `YYYY-MM-DD`, required once *Verdict* is filled |
-| Note | Free text, e.g. why it is a false positive |
-
-When a problem is found by several tiers, add one row per tier. That overlap is what the comparison table measures.
-
-**`features.csv`**: shipping dates, so the one-week follow-up is not forgotten, and the boundary questions for table 4.
-
-| Column | Values |
-| --- | --- |
-| Feature | Same name as in `log.csv` |
-| Shipped on | Date the feature went into real use |
-| Follow-up checked on | Date you filled *Bugs found later*, at least 7 days after shipping |
-| Real user data | `Yes` / `No`: does the feature touch real users' data? |
-| Public internet | `Yes` / `No`: is it reachable from the internet? |
-| Over 6 months | `Yes` / `No`: will it keep running for more than six months? |
-
----
-
-## Where things are
-
-| Plan (Vietnamese) | Task | This repository |
+| File | What it is | Guide |
 | --- | --- | --- |
-| `nhat-ky.csv` | T1 | `log.csv` (+ `findings.csv`, `features.csv`) |
-| `checklist.md` | T2 | `checklist.md` |
-| `quet-tu-dong.md` | T3 | `automated-scanning.md`, `scripts/scan.sh` |
-| `test-case-<tên>.md` | T4 | `templates/test-case-template.md` → `test-case-<feature>.md` |
-| `ra-soat-<tên>.md` | T5 | `ai-review.md`, `review.sh` → `review-<feature>.md` |
-| `ket-qua.md` | T6 | `./qa report` → `results.md` (`scripts/report.py`) |
-| `index.html` | T7 | *not built yet* (see `demo/demo.html` for the shape) |
-| `bao-cao-khung.md` | T8 | *not built yet* |
+| `log.csv` | Development log, one row per feature, exactly 8 columns | plan section 5.1 |
+| `checklist.md` | The 12 review criteria (C01–C12) used by Tier 3 | — |
+| `automated-scanning.md` | Tier 1: install and run gitleaks, trivy, semgrep | — |
+| `templates/test-case-template.md` | Tier 2: template for per-feature test cases | — |
+| `ai-review.md` | Tier 3: running the review on Gemini | — |
+| `classification.md` | How to fill in `findings.csv`, `boundary.csv`, `effort.csv` | — |
+| `report-outline.md` | Skeleton of the final 8–12 page report | — |
+| `index.html` | Results page, generated — do not edit by hand | `scripts/build-page.py` |
+| `demo/` | A trial run on a fake app. **Not research data.** | `demo/README.md` |
 
-`demo/` is a trial run on a simulated app with planted bugs. **It is not research data.**
+## First-time setup
 
-Not committed: `scan-results/` and `review-input/`, because they may contain source code or internal paths.
+```bash
+brew install gitleaks semgrep trivy
+git config core.hooksPath .githooks   # blocks secret leaks and an invalid log.csv at commit time
+```
+
+Before the first Tier 3 run, fill in the model, the output language and the mentor's approval in `ai-review.md` section 2.

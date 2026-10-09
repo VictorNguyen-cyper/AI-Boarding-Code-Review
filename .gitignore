@@ -4,3 +4,5 @@ scan-results/
 review-input/
 __pycache__/
 .venv/
+# Practice app database.
+practice/app/notes.db

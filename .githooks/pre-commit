@@ -9,15 +9,18 @@ gitleaks protect --staged --redact --verbose || {
   exit 1
 }
 
-if git diff --cached --name-only | grep -qxE 'log.csv|features.csv|findings.csv'; then
+if git diff --cached --name-only | grep -qxE 'log.csv|findings.csv|boundary.csv|effort.csv'; then
   # Check exactly what is about to be committed, not the working copies.
   TMP="$(mktemp -d)"
-  for f in log.csv features.csv findings.csv; do
-    git show ":$f" > "$TMP/$f" 2>/dev/null || cp "$ROOT/$f" "$TMP/$f"
+  for f in log.csv findings.csv boundary.csv effort.csv; do
+    git show ":$f" > "$TMP/$f" 2>/dev/null || {
+      rm -f "$TMP/$f"
+      [ ! -e "$ROOT/$f" ] || cp "$ROOT/$f" "$TMP/$f"
+    }
   done
   python3 "$ROOT/scripts/check-log.py" "$TMP/log.csv" &&
-    python3 "$ROOT/scripts/qa.py" check --log "$TMP/log.csv" \
-      --features "$TMP/features.csv" --findings "$TMP/findings.csv"
+    python3 "$ROOT/scripts/check-classification.py" \
+      "$TMP/findings.csv" "$TMP/boundary.csv" "$TMP/log.csv" "$TMP/effort.csv"
   rc=$?
   rm -rf "$TMP"
   [ $rc -eq 0 ] || {

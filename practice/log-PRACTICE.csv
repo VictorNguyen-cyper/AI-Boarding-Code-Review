@@ -1,0 +1,2 @@
+Feature,Requirement,Prompt rounds,Time,Manual check,Automated scan findings,AI review findings,Bugs found later
+Notes,"A signed-in user lists, reads, creates and deletes their own private notes (title required, max 100 characters; body max 2,000 characters).",,,Pass,None,"C01 at practice/app/app.py:16, severity High; C09 at practice/app/app.py:create_note, severity Low",
