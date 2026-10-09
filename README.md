@@ -36,10 +36,13 @@ Then fill in section 2 of `ai-review.md` (reviewing model, date, mentor approval
 | 4 | Tier 2 — test cases | Copy `templates/test-case-template.md` to `test-case-<feature>.md`, run every case | `test-case-<feature>.md`, `findings.csv` |
 | 5 | Tier 3 — AI review | `./qa review --lang vi "<feature>" requirements-<feature>.md <code dir>`, then follow `ai-review.md` §5 | `review-<feature>.md`, `log.csv`, `findings.csv` |
 | 6 | Classify | For each row in `findings.csv`, fill *Verdict* and *Classified on* | `findings.csv` |
-| 7 | Ship | When the feature goes into real use, fill *Shipped on* | `features.csv` |
-| 8 | One week later | `./qa status` shows **DUE**; fill *Bugs found later* in `log.csv` (`None` if nothing broke) and *Follow-up checked on* | `log.csv`, `features.csv` |
+| 7 | Boundary | Answer the 3 boundary questions (real user data? public internet? over 6 months?) | `features.csv` |
+| 8 | Ship | When the feature goes into real use, fill *Shipped on* | `features.csv` |
+| 9 | One week later | `./qa status` shows **DUE**; fill *Bugs found later* in `log.csv` (`None` if nothing broke) and *Follow-up checked on*. Add each bug to `findings.csv` with `Tier` = `Later` | `log.csv`, `features.csv`, `findings.csv` |
 
 Run `./qa check` any time to validate the three data files (the pre-commit hook runs it too).
+
+Week 4: `./qa report` builds `results.md` with the four result tables of plan section 8 (task T6). It uses only what is in the data files, marks anything it cannot compute as *missing*, and leaves unclassified findings out of every true / false figure. See `demo/results-DEMO.md` for an example.
 
 ---
 
@@ -52,8 +55,8 @@ Run `./qa check` any time to validate the three data files (the pre-commit hook 
 | Column | Values |
 | --- | --- |
 | Feature | Same name as in `log.csv` |
-| Tier | `1`, `2` or `3` |
-| Source | Tool (`gitleaks`, `trivy`, `semgrep`), test case ID (`TC-21`) or reviewing model |
+| Tier | `1`, `2`, `3`, or `Later` for a bug that showed up after shipping |
+| Source | Tool (`gitleaks`, `trivy`, `semgrep`), test case ID (`TC-21`), reviewing model, or who reported a later bug |
 | Criterion | `C01`–`C12` from `checklist.md`, or empty if none matches |
 | Location | `file:line`, endpoint or package. **Never** a secret value |
 | Severity | `Critical`, `High`, `Medium`, `Low`, or empty |
@@ -63,13 +66,16 @@ Run `./qa check` any time to validate the three data files (the pre-commit hook 
 
 When a problem is found by several tiers, add one row per tier. That overlap is what the comparison table measures.
 
-**`features.csv`**: shipping dates, so the one-week follow-up is not forgotten.
+**`features.csv`**: shipping dates, so the one-week follow-up is not forgotten, and the boundary questions for table 4.
 
 | Column | Values |
 | --- | --- |
 | Feature | Same name as in `log.csv` |
 | Shipped on | Date the feature went into real use |
 | Follow-up checked on | Date you filled *Bugs found later*, at least 7 days after shipping |
+| Real user data | `Yes` / `No`: does the feature touch real users' data? |
+| Public internet | `Yes` / `No`: is it reachable from the internet? |
+| Over 6 months | `Yes` / `No`: will it keep running for more than six months? |
 
 ---
 
@@ -82,7 +88,7 @@ When a problem is found by several tiers, add one row per tier. That overlap is 
 | `quet-tu-dong.md` | T3 | `automated-scanning.md`, `scripts/scan.sh` |
 | `test-case-<tên>.md` | T4 | `templates/test-case-template.md` → `test-case-<feature>.md` |
 | `ra-soat-<tên>.md` | T5 | `ai-review.md`, `review.sh` → `review-<feature>.md` |
-| `ket-qua.md` | T6 | *not built yet* |
+| `ket-qua.md` | T6 | `./qa report` → `results.md` (`scripts/report.py`) |
 | `index.html` | T7 | *not built yet* (see `demo/demo.html` for the shape) |
 | `bao-cao-khung.md` | T8 | *not built yet* |
 
