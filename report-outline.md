@@ -75,6 +75,7 @@
 ### 4.4 How findings were classified
 
 - Who classified each finding (true/false positive, category, which tier could catch it), when, and with what rule. *(fill in — this must be a human, rule A.1)*
+- Second opinion: who re-classified the random sample, its size and seed, and how many verdicts agreed (shown in `index.html` under the reliability table). Discuss the disagreements. *(fill in)*
 - The classification is recorded in `findings.csv` and `boundary.csv`; describe the rules in `classification.md` briefly, and any case where the verdict was hard to decide.
 
 ## 5. Timeline as executed (≈ ½ page)
@@ -115,6 +116,7 @@ Open with one sentence on the sample: how many features, over how many weeks. *(
 ### 6.5 Bugs found after one week
 
 - How many features had a bug after one week of real use, and whether any tier had flagged it beforehand.
+- How many features never went into real use (`Live since` = `Not live` in `boundary.csv`): for those, "no bug found later" is missing data, not a result.
 
 ## 7. Discussion and limitations (≈ 1 page)
 

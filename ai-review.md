@@ -87,6 +87,8 @@ The script creates two files:
 
 If `review-<name>.md` already exists, the script stops without overwriting it. The first result is research data; do not re-run to get a "nicer" result.
 
+Before uploading, check the *Code version* line in `review-<name>.md`. It should match the version Tier 1 scanned (*Code version* in `scan-results/<feature>/summary.txt`). If it says *plus uncommitted changes*, commit the feature code, delete both generated files and run `review.sh` again. This is allowed because nothing has been sent yet. Without a commit, there is no way to tell later which code was reviewed.
+
 **Step 2 — Send to Gemini:**
 
 1. Open a **new conversation** on gemini.google.com. Use a separate conversation for each feature so Gemini does not remember earlier runs.
